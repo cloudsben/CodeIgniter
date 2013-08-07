@@ -459,7 +459,11 @@ class CI_Profiler {
 
 		foreach ($this->CI->session->all_userdata() as $key => $val)
 		{
+<<<<<<< HEAD
 			if (is_array($val) || is_object($val))
+=======
+			if (is_array($val) OR is_object($val))
+>>>>>>> upstream/2.1-stable
 			{
 				$val = print_r($val, TRUE);
 			}

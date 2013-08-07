@@ -80,6 +80,7 @@ class CI_Security {
 	 * @var array
 	 */
 	protected $_never_allowed_str = array(
+<<<<<<< HEAD
 						'document.cookie'	=> '[removed]',
 						'document.write'	=> '[removed]',
 						'.parentNode'		=> '[removed]',
@@ -92,37 +93,71 @@ class CI_Security {
 						'<comment>'			=> '&lt;comment&gt;'
 					);
 
+=======
+		'document.cookie'	=> '[removed]',
+		'document.write'	=> '[removed]',
+		'.parentNode'		=> '[removed]',
+		'.innerHTML'		=> '[removed]',
+		'window.location'	=> '[removed]',
+		'-moz-binding'		=> '[removed]',
+		'<!--'				=> '&lt;!--',
+		'-->'				=> '--&gt;',
+		'<![CDATA['			=> '&lt;![CDATA[',
+		'<comment>'			=> '&lt;comment&gt;'
+	);
+
+	/* never allowed, regex replacement */
+>>>>>>> upstream/2.1-stable
 	/**
 	 * List of never allowed regex replacement
 	 *
 	 * @var array
 	 */
 	protected $_never_allowed_regex = array(
+<<<<<<< HEAD
 						'javascript\s*:',
 						'expression\s*(\(|&\#40;)', // CSS and IE
 						'vbscript\s*:', // IE, surprise!
 						'Redirect\s+302'
 					);
 
+=======
+		'javascript\s*:',
+		'expression\s*(\(|&\#40;)', // CSS and IE
+		'vbscript\s*:', // IE, surprise!
+		'Redirect\s+302',
+		"([\"'])?data\s*:[^\\1]*?base64[^\\1]*?,[^\\1]*?\\1?"
+	);
+
+	/**
+	 * Constructor
+	 *
+	 * @return	void
+	 */
+>>>>>>> upstream/2.1-stable
 	public function __construct()
 	{
-		// CSRF config
-		foreach(array('csrf_expire', 'csrf_token_name', 'csrf_cookie_name') as $key)
+		// Is CSRF protection enabled?
+		if (config_item('csrf_protection') === TRUE)
 		{
-			if (FALSE !== ($val = config_item($key)))
+			// CSRF config
+			foreach (array('csrf_expire', 'csrf_token_name', 'csrf_cookie_name') as $key)
 			{
-				$this->{'_'.$key} = $val;
+				if (FALSE !== ($val = config_item($key)))
+				{
+					$this->{'_'.$key} = $val;
+				}
 			}
-		}
 
-		// Append application specific cookie prefix
-		if (config_item('cookie_prefix'))
-		{
-			$this->_csrf_cookie_name = config_item('cookie_prefix').$this->_csrf_cookie_name;
-		}
+			// Append application specific cookie prefix
+			if (config_item('cookie_prefix'))
+			{
+				$this->_csrf_cookie_name = config_item('cookie_prefix').$this->_csrf_cookie_name;
+			}
 
-		// Set the CSRF hash
-		$this->_csrf_set_hash();
+			// Set the CSRF hash
+			$this->_csrf_set_hash();
+		}
 
 		log_message('debug', 'Security Class Initialized');
 	}
@@ -136,14 +171,24 @@ class CI_Security {
 	 */
 	public function csrf_verify()
 	{
+<<<<<<< HEAD
 		// If no POST data exists we will set the CSRF cookie
 		if (count($_POST) === 0)
+=======
+		// If it's not a POST request we will set the CSRF cookie
+		if (strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST')
+>>>>>>> upstream/2.1-stable
 		{
 			return $this->csrf_set_cookie();
 		}
 
+<<<<<<< HEAD
 		// Check if URI has been whitelisted from CSRF checks
 		if ($exclude_uris = config_item('csrf_exclude_uris'))
+=======
+		// Do the tokens exist in both the _POST and _COOKIE arrays?
+		if ( ! isset($_POST[$this->_csrf_token_name], $_COOKIE[$this->_csrf_cookie_name]))
+>>>>>>> upstream/2.1-stable
 		{
 			$uri = load_class('URI', 'core');
 			if (in_array($uri->uri_string(), $exclude_uris))
@@ -174,6 +219,10 @@ class CI_Security {
 		$this->csrf_set_cookie();
 
 		log_message('debug', 'CSRF token verified');
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/2.1-stable
 		return $this;
 	}
 
@@ -189,7 +238,11 @@ class CI_Security {
 		$expire = time() + $this->_csrf_expire;
 		$secure_cookie = (bool) config_item('cookie_secure');
 
+<<<<<<< HEAD
 		if ($secure_cookie && ( ! isset($_SERVER['HTTPS']) OR $_SERVER['HTTPS'] == 'off' OR ! $_SERVER['HTTPS']))
+=======
+		if ($secure_cookie && (empty($_SERVER['HTTPS']) OR strtolower($_SERVER['HTTPS']) === 'off'))
+>>>>>>> upstream/2.1-stable
 		{
 			return FALSE;
 		}
@@ -352,9 +405,9 @@ class CI_Security {
 		 * These words are compacted back to their correct state.
 		 */
 		$words = array(
-				'javascript', 'expression', 'vbscript', 'script',
-				'applet', 'alert', 'document', 'write', 'cookie', 'window'
-			);
+			'javascript', 'expression', 'vbscript', 'script', 'base64',
+			'applet', 'alert', 'document', 'write', 'cookie', 'window'
+		);
 
 		foreach ($words as $word)
 		{
@@ -513,6 +566,7 @@ class CI_Security {
 	public function sanitize_filename($str, $relative_path = FALSE)
 	{
 		$bad = array(
+<<<<<<< HEAD
 				'../', '<!--', '-->', '<', '>',
 				"'", '"', '&', '$', '#',
 				'{', '}', '[', ']', '=',
@@ -530,6 +584,40 @@ class CI_Security {
 				'%3b',		// ;
 				'%3d'		// =
 			);
+=======
+			"../",
+			"<!--",
+			"-->",
+			"<",
+			">",
+			"'",
+			'"',
+			'&',
+			'$',
+			'#',
+			'{',
+			'}',
+			'[',
+			']',
+			'=',
+			';',
+			'?',
+			"%20",
+			"%22",
+			"%3c",		// <
+			"%253c",	// <
+			"%3e",		// >
+			"%0e",		// >
+			"%28",		// (
+			"%29",		// )
+			"%2528",	// (
+			"%26",		// &
+			"%24",		// $
+			"%3f",		// ?
+			"%3b",		// ;
+			"%3d"		// =
+		);
+>>>>>>> upstream/2.1-stable
 
 		if ( ! $relative_path)
 		{
@@ -592,16 +680,26 @@ class CI_Security {
 			$count = 0;
 			$attribs = array();
 
+<<<<<<< HEAD
 			// find occurrences of illegal attribute strings without quotes
 			preg_match_all('/('.implode('|', $evil_attributes).')\s*=\s*([^\s]*)/is', $str, $matches, PREG_SET_ORDER);
+=======
+			// find occurrences of illegal attribute strings with quotes (042 and 047 are octal quotes)
+			preg_match_all('/('.implode('|', $evil_attributes).')\s*=\s*(\042|\047)([^\\2]*?)(\\2)/is', $str, $matches, PREG_SET_ORDER);
+>>>>>>> upstream/2.1-stable
 
 			foreach ($matches as $attr)
 			{
 				$attribs[] = preg_quote($attr[0], '/');
 			}
 
+<<<<<<< HEAD
 			// find occurrences of illegal attribute strings with quotes (042 and 047 are octal quotes)
 			preg_match_all('/('.implode('|', $evil_attributes).')\s*=\s*(\042|\047)([^\\2]*?)(\\2)/is',  $str, $matches, PREG_SET_ORDER);
+=======
+			// find occurrences of illegal attribute strings without quotes
+			preg_match_all('/('.implode('|', $evil_attributes).')\s*=\s*([^\s>]*)/is', $str, $matches, PREG_SET_ORDER);
+>>>>>>> upstream/2.1-stable
 
 			foreach ($matches as $attr)
 			{
@@ -611,7 +709,11 @@ class CI_Security {
 			// replace illegal attribute strings that are inside an html tag
 			if (count($attribs) > 0)
 			{
+<<<<<<< HEAD
 				$str = preg_replace('/<(\/?[^><]+?)([^A-Za-z\-])('.implode('|', $attribs).')([\s><])([><]*)/i', '<$1$2$4$5', $str, -1, $count);
+=======
+				$str = preg_replace('/(<?)(\/?[^><]+?)([^A-Za-z<>\-])(.*?)('.implode('|', $attribs).')(.*?)([\s><]?)([><]*)/i', '$1$2 $4$6$7$8', $str, -1, $count);
+>>>>>>> upstream/2.1-stable
 			}
 
 		} while ($count);
@@ -651,12 +753,24 @@ class CI_Security {
 	 */
 	protected function _js_link_removal($match)
 	{
+<<<<<<< HEAD
 		return str_replace($match[1],
 					preg_replace('#href=.*?(alert\(|alert&\#40;|javascript\:|livescript\:|mocha\:|charset\=|window\.|document\.|\.cookie|<script|<xss|base64\s*,)#si',
 							'',
 							$this->_filter_attributes(str_replace(array('<', '>'), '', $match[1]))
 					),
 					$match[0]);
+=======
+		return str_replace(
+			$match[1],
+			preg_replace(
+				'#href=.*?(alert\(|alert&\#40;|javascript\:|livescript\:|mocha\:|charset\=|window\.|document\.|\.cookie|<script|<xss|data\s*:)#si',
+				'',
+				$this->_filter_attributes(str_replace(array('<', '>'), '', $match[1]))
+			),
+			$match[0]
+		);
+>>>>>>> upstream/2.1-stable
 	}
 
 	// --------------------------------------------------------------------
@@ -674,12 +788,24 @@ class CI_Security {
 	 */
 	protected function _js_img_removal($match)
 	{
+<<<<<<< HEAD
 		return str_replace($match[1],
 					preg_replace('#src=.*?(alert\(|alert&\#40;|javascript\:|livescript\:|mocha\:|charset\=|window\.|document\.|\.cookie|<script|<xss|base64\s*,)#si',
 							'',
 							$this->_filter_attributes(str_replace(array('<', '>'), '', $match[1]))
 					),
 					$match[0]);
+=======
+		return str_replace(
+			$match[1],
+			preg_replace(
+				'#src=.*?(alert\(|alert&\#40;|javascript\:|livescript\:|mocha\:|charset\=|window\.|document\.|\.cookie|<script|<xss|base64\s*,)#si',
+				'',
+				$this->_filter_attributes(str_replace(array('<', '>'), '', $match[1]))
+			),
+			$match[0]
+		);
+>>>>>>> upstream/2.1-stable
 	}
 
 	// --------------------------------------------------------------------
@@ -792,7 +918,11 @@ class CI_Security {
 
 		foreach ($this->_never_allowed_regex as $regex)
 		{
+<<<<<<< HEAD
 			$str = preg_replace('#'.$regex.'#i', '[removed]', $str);
+=======
+			$str = preg_replace('#'.$regex.'#is', '[removed]', $str);
+>>>>>>> upstream/2.1-stable
 		}
 
 		return $str;
@@ -814,7 +944,7 @@ class CI_Security {
 			// each page load since a page could contain embedded
 			// sub-pages causing this feature to fail
 			if (isset($_COOKIE[$this->_csrf_cookie_name]) &&
-				$_COOKIE[$this->_csrf_cookie_name] != '')
+				preg_match('#^[0-9a-f]{32}$#iS', $_COOKIE[$this->_csrf_cookie_name]) === 1)
 			{
 				return $this->_csrf_hash = $_COOKIE[$this->_csrf_cookie_name];
 			}

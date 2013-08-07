@@ -405,7 +405,7 @@ class CI_Session {
 	public function sess_destroy()
 	{
 		// Kill the session DB row
-		if ($this->sess_use_database === TRUE AND isset($this->userdata['session_id']))
+		if ($this->sess_use_database === TRUE && isset($this->userdata['session_id']))
 		{
 			$this->CI->db->where('session_id', $this->userdata['session_id']);
 			$this->CI->db->delete($this->sess_table_name);
@@ -420,6 +420,9 @@ class CI_Session {
 					$this->cookie_domain,
 					0
 				);
+
+		// Kill session data
+		$this->userdata = array();
 	}
 
 	// --------------------------------------------------------------------

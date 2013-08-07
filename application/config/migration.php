@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * CodeIgniter
@@ -25,18 +26,27 @@
  * @filesource
  */
 
+=======
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+>>>>>>> upstream/2.1-stable
 /*
 |--------------------------------------------------------------------------
 | Enable/Disable Migrations
 |--------------------------------------------------------------------------
 |
+<<<<<<< HEAD
 | Migrations are disabled by default for security reasons.
 | You should enable migrations whenever you intend to do a schema migration
 | and disable it back when you're done.
+=======
+| Migrations are disabled by default but should be enabled 
+| whenever you intend to do a schema migration.
+>>>>>>> upstream/2.1-stable
 |
 */
 $config['migration_enabled'] = FALSE;
 
+<<<<<<< HEAD
 /*
 |--------------------------------------------------------------------------
 | Migrations table
@@ -64,6 +74,8 @@ $config['migration_table'] = 'migrations';
 |
 */
 $config['migration_auto_latest'] = FALSE;
+=======
+>>>>>>> upstream/2.1-stable
 
 /*
 |--------------------------------------------------------------------------
@@ -71,12 +83,20 @@ $config['migration_auto_latest'] = FALSE;
 |--------------------------------------------------------------------------
 |
 | This is used to set migration version that the file system should be on.
+<<<<<<< HEAD
 | If you run $this->migration->current() this is the version that schema will
+=======
+| If you run $this->migration->latest() this is the version that schema will
+>>>>>>> upstream/2.1-stable
 | be upgraded / downgraded to.
 |
 */
 $config['migration_version'] = 0;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/2.1-stable
 /*
 |--------------------------------------------------------------------------
 | Migrations Path
@@ -90,4 +110,9 @@ $config['migration_version'] = 0;
 $config['migration_path'] = APPPATH . 'migrations/';
 
 
+<<<<<<< HEAD
 /* End of file migration.php */
+=======
+/* End of file migration.php */
+/* Location: ./application/config/migration.php */
+>>>>>>> upstream/2.1-stable

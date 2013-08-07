@@ -17,9 +17,15 @@
  * licensing@ellislab.com so we can send you a copy immediately.
  *
  * @package		CodeIgniter
+<<<<<<< HEAD
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2006 - 2012 EllisLab, Inc.
  * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+=======
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2006 - 2012 EllisLab, Inc.
+ * @license		http://codeigniter.com/user_guide/license.html
+>>>>>>> upstream/2.1-stable
  * @link		http://codeigniter.com
  * @since		Version 2.0
  * @filesource
@@ -161,7 +167,12 @@ class CI_Cache_file extends CI_Driver {
 			return FALSE;
 		}
 
+<<<<<<< HEAD
 		$data = unserialize(read_file($this->_cache_path.$id));
+=======
+		$data = read_file($this->_cache_path.$id);
+		$data = unserialize($data);
+>>>>>>> upstream/2.1-stable
 
 		if (is_array($data))
 		{
@@ -173,8 +184,13 @@ class CI_Cache_file extends CI_Driver {
 			}
 
 			return array(
+<<<<<<< HEAD
 				'expire' => $mtime + $data['data']['ttl'],
 				'mtime'	 => $mtime
+=======
+				'expire'	=> $mtime + $data['ttl'],
+				'mtime'		=> $mtime
+>>>>>>> upstream/2.1-stable
 			);
 		}
 

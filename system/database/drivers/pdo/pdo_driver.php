@@ -21,7 +21,7 @@
  * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
  * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @link		http://codeigniter.com
- * @since		Version 2.1.0
+ * @since		Version 2.1.2
  * @filesource
  */
 
@@ -63,23 +63,23 @@ class CI_DB_pdo_driver extends CI_DB {
 	function __construct($params)
 	{
 		parent::__construct($params);
-		
+
 		// clause and character used for LIKE escape sequences
 		if (strpos($this->hostname, 'mysql') !== FALSE)
 		{
 			$this->_like_escape_str = '';
 			$this->_like_escape_chr = '';
-			
+
 			//Prior to this version, the charset can't be set in the dsn
 			if(is_php('5.3.6'))
 			{
 				$this->hostname .= ";charset={$this->char_set}";
 			}
-			
+
 			//Set the charset with the connection options
 			$this->options['PDO::MYSQL_ATTR_INIT_COMMAND'] = "SET NAMES {$this->char_set}";
 		}
-		else if (strpos($this->hostname, 'odbc') !== FALSE)
+		elseif (strpos($this->hostname, 'odbc') !== FALSE)
 		{
 			$this->_like_escape_str = " {escape '%s'} ";
 			$this->_like_escape_chr = '!';
@@ -89,12 +89,18 @@ class CI_DB_pdo_driver extends CI_DB {
 			$this->_like_escape_str = " ESCAPE '%s' ";
 			$this->_like_escape_chr = '!';
 		}
+<<<<<<< HEAD
 		
 		if (strpos($this->hostname, 'sqlite') === FALSE)
 		{
 			$this->hostname .= ";dbname=".$this->database;
 		}
 		
+=======
+
+		empty($this->database) OR $this->hostname .= ';dbname='.$this->database;
+
+>>>>>>> upstream/2.1-stable
 		$this->trans_enabled = FALSE;
 
 		$this->_random_keyword = ' RND('.time().')'; // database specific random keyword
@@ -109,7 +115,7 @@ class CI_DB_pdo_driver extends CI_DB {
 	function db_connect()
 	{
 		$this->options['PDO::ATTR_ERRMODE'] = PDO::ERRMODE_SILENT;
-		
+
 		return new PDO($this->hostname, $this->username, $this->password, $this->options);
 	}
 
@@ -204,11 +210,20 @@ class CI_DB_pdo_driver extends CI_DB {
 	function _execute($sql)
 	{
 		$sql = $this->_prep_query($sql);
-		$result_id = $this->conn_id->query($sql);
+		$result_id = $this->conn_id->prepare($sql);
+		$result_id->execute();
 		
 		if (is_object($result_id))
 		{
-			$this->affect_rows = $result_id->rowCount();
+			if (is_numeric(stripos($sql, 'SELECT')))
+			{
+				$this->affect_rows = count($result_id->fetchAll());
+				$result_id->execute();
+			}
+			else
+			{
+				$this->affect_rows = $result_id->rowCount();
+			}
 		}
 		else
 		{

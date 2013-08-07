@@ -18,8 +18,13 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
+<<<<<<< HEAD
  * @copyright	Copyright (c) 2006 - 2012, EllisLab, Inc. (http://ellislab.com/)
  * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+=======
+ * @copyright	Copyright (c) 2006 - 2012, EllisLab, Inc.
+ * @license		http://codeigniter.com/user_guide/license.html
+>>>>>>> upstream/2.1-stable
  * @link		http://codeigniter.com
  * @since		Version 3.0
  * @filesource
@@ -71,7 +76,11 @@ class CI_Migration {
 		}
 
 		// If not set, set it
+<<<<<<< HEAD
 		$this->_migration_path == '' AND $this->_migration_path = APPPATH.'migrations/';
+=======
+		$this->_migration_path == '' AND $this->_migration_path = APPPATH . 'migrations/';
+>>>>>>> upstream/2.1-stable
 
 		// Add trailing slash if not set
 		$this->_migration_path = rtrim($this->_migration_path, '/').'/';
@@ -115,8 +124,7 @@ class CI_Migration {
 	 * Calls each migration step required to get to the schema version of
 	 * choice
 	 *
-	 * @access	public
-	 * @param $version integer	Target schema version
+	 * @param	int	Target schema version
 	 * @return	mixed	TRUE if already latest, FALSE if failed, int if upgraded
 	 */
 	public function version($target_version)
@@ -137,7 +145,11 @@ class CI_Migration {
 			$step = -1;
 		}
 
+<<<<<<< HEAD
 		$method = $step === 1 ? 'up' : 'down';
+=======
+		$method = ($step === 1) ? 'up' : 'down';
+>>>>>>> upstream/2.1-stable
 		$migrations = array();
 
 		// We now prepare to actually DO the migrations
@@ -241,7 +253,6 @@ class CI_Migration {
 	/**
 	 * Set's the schema to the latest migration
 	 *
-	 * @access	public
 	 * @return	mixed	true if already latest, false if failed, int if upgraded
 	 */
 	public function latest()
@@ -264,7 +275,6 @@ class CI_Migration {
 	/**
 	 * Set's the schema to the migration version set in config
 	 *
-	 * @access	public
 	 * @return	mixed	true if already current, false if failed, int if upgraded
 	 */
 	public function current()
@@ -277,7 +287,6 @@ class CI_Migration {
 	/**
 	 * Error string
 	 *
-	 * @access	public
 	 * @return	string	Error message returned as a string
 	 */
 	public function error_string()
@@ -290,15 +299,21 @@ class CI_Migration {
 	/**
 	 * Set's the schema to the latest migration
 	 *
-	 * @access	protected
 	 * @return	mixed	true if already latest, false if failed, int if upgraded
 	 */
 	protected function find_migrations()
 	{
 		// Load all *_*.php files in the migrations path
+<<<<<<< HEAD
 		$files = glob($this->_migration_path.'*_*.php');
 
 		for ($i = 0, $c = count($files); $i < $c; $i++)
+=======
+		$files = glob($this->_migration_path . '*_*.php');
+		$file_count = count($files);
+
+		for ($i = 0; $i < $file_count; $i++)
+>>>>>>> upstream/2.1-stable
 		{
 			// Mark wrongly formatted files as false for later filtering
 			if ( ! preg_match('/^\d{3}_(\w+)$/', basename($files[$i], '.php')))
@@ -306,9 +321,13 @@ class CI_Migration {
 				$files[$i] = FALSE;
 			}
 		}
+<<<<<<< HEAD
 
 		sort($files);
+=======
+>>>>>>> upstream/2.1-stable
 
+		sort($files);
 		return $files;
 	}
 
@@ -317,8 +336,7 @@ class CI_Migration {
 	/**
 	 * Retrieves current schema version
 	 *
-	 * @access	protected
-	 * @return	integer	Current Migration
+	 * @return	int	Current Migration
 	 */
 	protected function _get_version()
 	{
@@ -331,9 +349,8 @@ class CI_Migration {
 	/**
 	 * Stores the current schema version
 	 *
-	 * @access	protected
-	 * @param $migrations integer	Migration reached
-	 * @return	void					Outputs a report of the migration
+	 * @param	int	Migration reached
+	 * @return	bool
 	 */
 	protected function _update_version($migrations)
 	{
@@ -347,8 +364,7 @@ class CI_Migration {
 	/**
 	 * Enable the use of CI super-global
 	 *
-	 * @access	public
-	 * @param $var
+	 * @param	mixed	$var
 	 * @return	mixed
 	 */
 	public function __get($var)

@@ -45,7 +45,19 @@
  * @var string
  *
  */
+<<<<<<< HEAD
 	define('CI_VERSION', '3.0-dev');
+=======
+	define('CI_VERSION', '2.1.4');
+
+/**
+ * CodeIgniter Branch (Core = TRUE, Reactor = FALSE)
+ *
+ * @var boolean
+ *
+ */
+	define('CI_CORE', FALSE);
+>>>>>>> upstream/2.1-stable
 
 /*
  * ------------------------------------------------------

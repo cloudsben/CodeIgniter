@@ -90,6 +90,11 @@ class CI_Input {
 	 *
 	 * Sets whether to globally enable the XSS processing
 	 * and whether to allow the $_GET array
+<<<<<<< HEAD
+=======
+	 *
+	 * @return	void
+>>>>>>> upstream/2.1-stable
 	 */
 	public function __construct()
 	{
@@ -313,12 +318,29 @@ class CI_Input {
 			return $this->ip_address;
 		}
 
+<<<<<<< HEAD
 		$real_ip = $this->server('HTTP_X_REAL_IP');
 		if (config_item('proxy_ips') != '' && $this->server('HTTP_X_FORWARDED_FOR') && $this->server('REMOTE_ADDR'))
+=======
+		$proxy_ips = config_item('proxy_ips');
+		if ( ! empty($proxy_ips))
+>>>>>>> upstream/2.1-stable
 		{
-			$proxies = preg_split('/[\s,]/', config_item('proxy_ips'), -1, PREG_SPLIT_NO_EMPTY);
-			$proxies = is_array($proxies) ? $proxies : array($proxies);
+			$proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
+			foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header)
+			{
+				if (($spoof = $this->server($header)) !== FALSE)
+				{
+					// Some proxies typically list the whole chain of IP
+					// addresses through which the client has reached us.
+					// e.g. client_ip, proxy_ip1, proxy_ip2, etc.
+					if (strpos($spoof, ',') !== FALSE)
+					{
+						$spoof = explode(',', $spoof, 2);
+						$spoof = $spoof[0];
+					}
 
+<<<<<<< HEAD
 			$this->ip_address = in_array($_SERVER['REMOTE_ADDR'], $proxies) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 		}
 		elseif($this->server('HTTP_X_REAL_IP'))
@@ -330,32 +352,34 @@ class CI_Input {
 			$this->ip_address = $_SERVER['REMOTE_ADDR'];
 		}
 		elseif ($this->server('REMOTE_ADDR') AND $this->server('HTTP_CLIENT_IP'))
+=======
+					if ( ! $this->valid_ip($spoof))
+					{
+						$spoof = FALSE;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+
+			$this->ip_address = ($spoof !== FALSE && in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, TRUE))
+				? $spoof : $_SERVER['REMOTE_ADDR'];
+		}
+		else
+>>>>>>> upstream/2.1-stable
 		{
 			$this->ip_address = $_SERVER['HTTP_CLIENT_IP'];
-		}
-		elseif ($this->server('HTTP_CLIENT_IP'))
-		{
-			$this->ip_address = $_SERVER['HTTP_CLIENT_IP'];
-		}
-		elseif ($this->server('HTTP_X_FORWARDED_FOR'))
-		{
-			$this->ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		}
-
-		if ($this->ip_address === FALSE)
-		{
-			return $this->ip_address = '0.0.0.0';
-		}
-
-		if (strpos($this->ip_address, ',') !== FALSE)
-		{
-			$x = explode(',', $this->ip_address);
-			$this->ip_address = trim(end($x));
 		}
 
 		if ( ! $this->valid_ip($this->ip_address))
 		{
+<<<<<<< HEAD
 			return $this->ip_address = '0.0.0.0';
+=======
+			$this->ip_address = '0.0.0.0';
+>>>>>>> upstream/2.1-stable
 		}
 
 		return $this->ip_address;
@@ -366,12 +390,76 @@ class CI_Input {
 	/**
 	* Validate IP Address
 	*
+	* @access	public
+	* @param	string
+	* @param	string	ipv4 or ipv6
+	* @return	bool
+	*/
+	public function valid_ip($ip, $which = '')
+	{
+		$which = strtolower($which);
+
+		// First check if filter_var is available
+		if (is_callable('filter_var'))
+		{
+			switch ($which) {
+				case 'ipv4':
+					$flag = FILTER_FLAG_IPV4;
+					break;
+				case 'ipv6':
+					$flag = FILTER_FLAG_IPV6;
+					break;
+				default:
+					$flag = '';
+					break;
+			}
+
+			return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flag);
+		}
+
+		if ($which !== 'ipv6' && $which !== 'ipv4')
+		{
+<<<<<<< HEAD
+			return $this->ip_address = '0.0.0.0';
+=======
+			if (strpos($ip, ':') !== FALSE)
+			{
+				$which = 'ipv6';
+			}
+			elseif (strpos($ip, '.') !== FALSE)
+			{
+				$which = 'ipv4';
+			}
+			else
+			{
+				return FALSE;
+			}
+>>>>>>> upstream/2.1-stable
+		}
+
+		$func = '_valid_'.$which;
+		return $this->$func($ip);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Validate IPv4 Address
+	*
 	* Updated version suggested by Geert De Deckere
 	*
+<<<<<<< HEAD
 	* @param	string
 	* @return	bool
 	*/
 	public function valid_ip($ip)
+=======
+	* @access	protected
+	* @param	string
+	* @return	bool
+	*/
+	protected function _valid_ipv4($ip)
+>>>>>>> upstream/2.1-stable
 	{
 		// if php version >= 5.2, use filter_var to check validate ip.
 		if (function_exists('filter_var'))
@@ -391,6 +479,7 @@ class CI_Input {
 		{
 			return FALSE;
 		}
+
 		// Check each segment
 		foreach ($ip_segments as $segment)
 		{
@@ -403,6 +492,80 @@ class CI_Input {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Validate IPv6 Address
+	*
+	* @access	protected
+	* @param	string
+	* @return	bool
+	*/
+	protected function _valid_ipv6($str)
+	{
+		// 8 groups, separated by :
+		// 0-ffff per group
+		// one set of consecutive 0 groups can be collapsed to ::
+
+		$groups = 8;
+		$collapsed = FALSE;
+
+		$chunks = array_filter(
+			preg_split('/(:{1,2})/', $str, NULL, PREG_SPLIT_DELIM_CAPTURE)
+		);
+
+		// Rule out easy nonsense
+		if (current($chunks) == ':' OR end($chunks) == ':')
+		{
+			return FALSE;
+		}
+
+		// PHP supports IPv4-mapped IPv6 addresses, so we'll expect those as well
+		if (strpos(end($chunks), '.') !== FALSE)
+		{
+			$ipv4 = array_pop($chunks);
+
+			if ( ! $this->_valid_ipv4($ipv4))
+			{
+				return FALSE;
+			}
+
+			$groups--;
+		}
+
+		while ($seg = array_pop($chunks))
+		{
+			if ($seg[0] == ':')
+			{
+				if (--$groups == 0)
+				{
+					return FALSE;	// too many groups
+				}
+
+				if (strlen($seg) > 2)
+				{
+					return FALSE;	// long separator
+				}
+
+				if ($seg == '::')
+				{
+					if ($collapsed)
+					{
+						return FALSE;	// multiple collapsed
+					}
+
+					$collapsed = TRUE;
+				}
+			}
+			elseif (preg_match("/[^0-9a-f]/i", $seg) OR strlen($seg) > 4)
+			{
+				return FALSE; // invalid segment
+			}
+		}
+
+		return $collapsed OR $groups == 1;
 	}
 
 	// --------------------------------------------------------------------
@@ -515,8 +678,14 @@ class CI_Input {
 		// Sanitize PHP_SELF
 		$_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']);
 
+<<<<<<< HEAD
 		// CSRF Protection check
 		if ($this->_enable_csrf == TRUE)
+=======
+
+		// CSRF Protection check on HTTP requests
+		if ($this->_enable_csrf == TRUE && ! $this->is_cli_request())
+>>>>>>> upstream/2.1-stable
 		{
 			$this->security->csrf_verify();
 		}
@@ -704,11 +873,15 @@ class CI_Input {
 	 *
 	 * Test to see if a request was made from the command line
 	 *
-	 * @return 	boolean
+	 * @return 	bool
 	 */
 	public function is_cli_request()
 	{
+<<<<<<< HEAD
 		return (php_sapi_name() === 'cli') or defined('STDIN');
+=======
+		return (php_sapi_name() === 'cli' OR defined('STDIN'));
+>>>>>>> upstream/2.1-stable
 	}
 
 }

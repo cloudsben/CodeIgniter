@@ -17,9 +17,15 @@
  * licensing@ellislab.com so we can send you a copy immediately.
  *
  * @package		CodeIgniter
+<<<<<<< HEAD
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2006 - 2012, EllisLab, Inc. (http://ellislab.com/)
  * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+=======
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2006 - 2012, EllisLab, Inc.
+ * @license		http://codeigniter.com/user_guide/license.html
+>>>>>>> upstream/2.1-stable
  * @link		http://codeigniter.com
  * @since		Version 1.0
  * @filesource

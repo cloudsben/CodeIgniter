@@ -72,8 +72,17 @@ if ( ! function_exists('form_open'))
 
 		$form = '<form action="'.$action.'"'._attributes_to_string($attributes, TRUE).">\n";
 
+<<<<<<< HEAD
 		// Add CSRF field if enabled, but leave it out for GET requests and requests to external websites
 		if ($CI->config->item('csrf_protection') === TRUE AND ! (strpos($action, $CI->config->site_url()) === FALSE OR strpos($form, 'method="get"')))
+=======
+		$form .= _attributes_to_string($attributes, TRUE);
+
+		$form .= '>';
+
+		// Add CSRF field if enabled, but leave it out for GET requests and requests to external websites	
+		if ($CI->config->item('csrf_protection') === TRUE AND ! (strpos($action, $CI->config->base_url()) === FALSE OR strpos($form, 'method="get"')))	
+>>>>>>> upstream/2.1-stable
 		{
 			$hidden[$CI->security->get_csrf_token_name()] = $CI->security->get_csrf_hash();
 		}
